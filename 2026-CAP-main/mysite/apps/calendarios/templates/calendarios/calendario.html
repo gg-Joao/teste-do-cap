@@ -1,0 +1,61 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}{{ calendario.nome }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'calendarios/css/calendario.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="topo">
+        <h1>
+            <a href="{% url 'calendarios:calendario_detalhe' calendario.id %}" class="calendario">{{ calendario.nome }}</a>
+            {% if calendario.turma %}
+                <p class="separacao">/</p>
+                <a href="{% url 'turmas:turma_detalhe' calendario.turma.id %}" class="turma">{{ calendario.turma }}</a>
+            {% endif %}
+        </h1>    
+        <div class="circulo-paleta paleta-{{ usuario.paleta }}"></div>
+        
+        {% if usuario.eh_admin %}
+            <a href="{% url 'calendarios:atualizar_calendario' calendario.id %}" class="icone-atualizar admin">
+                <span class="material-symbols-outlined">edit</span>
+            </a>
+        
+            <a href="{% url 'calendarios:deletar_calendario' calendario.id %}" class="icone-deletar admin">
+                <span class="material-symbols-outlined">delete</span>
+            </a>
+        {% else %}
+            <a href="#" class="icone-atualizar">
+                <img src="{% static 'core/icones/atualizar.svg' %}" alt="">
+            </a>
+        
+            <a href="#" class="icone-deletar">
+                <img src="{% static 'core/icones/deletar.svg' %}" alt="">
+            </a>
+        {% endif %}
+    </div>    
+
+    <p class="descricao">{{ calendario.descricao }}</p>
+
+    <h3>Líderes</h3>
+    <div class="lista-membros lideres">
+        {% for lider in calendario.lideres %}
+            <div class="membro lider">
+                <p>{{ lider.nome }}</p>
+                <span class="icone-email material-symbols-outlined">mail</span>
+            </div>
+        {% endfor %}
+    </div>
+
+    <h3>Membros comuns</h3>
+    <div class="lista-membros membros-comuns">
+        {% for membro_comum in calendario.membros_comuns %}
+            <div class="membro membro-comum">
+                <p>{{ membro_comum.nome }}</p>
+                <span class="icone-email material-symbols-outlined">mail</span>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

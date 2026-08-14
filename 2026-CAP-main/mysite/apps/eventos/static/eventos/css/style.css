@@ -1,0 +1,113 @@
+.container {
+    padding: 40px;
+    text-align: center;
+}
+
+.btn-open {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 16px;
+}
+.btn-open:hover {
+    background-color: #1d4ed8;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+    background-color: white;
+    width: 90%;
+    max-width: 500px;
+    margin: 8% auto;
+    padding: 25px;
+    border-radius: 5px;
+    position: relative;
+}
+.modal .close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #4b5563;
+}
+.btn-delete {
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    flex: 1;
+}
+
+.btn-delete:hover {
+    background-color: #b91c1c;
+}
+.btn-delete-icon {
+    position: relative;
+    background: transparent;
+    border: none;
+    padding: 6px;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.btn-delete-icon img {
+    width: 18px;
+    height: 18px;
+}
+.btn-delete-icon:hover {
+    opacity: 0.9;
+}
+label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 5px;
+}
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.horarios {
+    display: flex;
+    gap: 15px;
+}
+.horarios div {
+    flex: 1;
+}
+.botoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+.btn-cancel,.btn-save {
+    flex: 1;
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+.btn-cancel {
+    background-color: #e5e7eb;
+}
+.btn-save {
+    background-color: #288012;
+    color: white;
+}

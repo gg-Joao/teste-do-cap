@@ -1,0 +1,187 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Editar {{ evento.nome }}{% endblock %}
+
+{% block content %}
+<div class="container-pagina">
+    <h1>Editar Evento: {{ evento.nome }}</h1>
+    
+    {% if error %}
+        <div class="alerta-erro">
+            <strong>Erro:</strong> {{ error }}
+        </div>
+    {% endif %}
+    
+    <form method="post" class="formulario-evento">
+        {% csrf_token %}
+        
+        <div class="grupo-form">
+            <label for="titulo">Título do Evento *</label>
+            <input 
+                type="text" 
+                id="titulo" 
+                name="titulo" 
+                maxlength="100"
+                value="{{ evento.nome }}"
+                required
+                placeholder="Ex: Prova de Matemática"
+            >
+        </div>
+        
+        <div class="grupo-form">
+            <label for="calendario">Calendário *</label>
+            <select id="calendario" name="calendario" required>
+                <option value="">-- Selecione um calendário --</option>
+                {% for cal in calendarios %}
+                    <option value="{{ cal.id }}" {% if cal.id == evento.calendario.id %}selected{% endif %}>
+                        {{ cal.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="grupo-form">
+            <label for="data">Data *</label>
+            <input 
+                type="date" 
+                id="data" 
+                name="data" 
+                value="{{ evento.inicio|date:'Y-m-d' }}"
+                required
+            >
+        </div>
+        
+        <div class="grupo-form">
+            <label for="inicio">Hora de Início *</label>
+            <input 
+                type="time" 
+                id="inicio" 
+                name="inicio" 
+                value="{{ evento.inicio|time:'H:i' }}"
+                required
+            >
+        </div>
+        
+        <div class="grupo-form">
+            <label for="fim">Hora de Fim *</label>
+            <input 
+                type="time" 
+                id="fim" 
+                name="fim" 
+                value="{{ evento.fim|time:'H:i' }}"
+                required
+            >
+        </div>
+        
+        <div class="grupo-form">
+            <label for="descricao">Descrição</label>
+            <textarea 
+                id="descricao" 
+                name="descricao" 
+                maxlength="500"
+                placeholder="Detalhes adicionais sobre o evento (opcional)"
+                rows="4"
+            >{{ evento.conteudo }}</textarea>
+        </div>
+        
+        <div class="acoes-formulario">
+            <button type="submit" class="botao botao-primario">
+                ✓ Salvar Alterações
+            </button>
+            <a href="{% url 'evento_detalhe' evento.id %}" class="botao botao-secundario">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+.container-pagina {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.formulario-evento {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.grupo-form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.grupo-form label {
+    font-weight: bold;
+    color: #333;
+}
+
+.grupo-form input,
+.grupo-form select,
+.grupo-form textarea {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.grupo-form input:focus,
+.grupo-form select:focus,
+.grupo-form textarea:focus {
+    outline: none;
+    border-color: #4285F4;
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+}
+
+.acoes-formulario {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.botao {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.2s;
+    flex: 1;
+}
+
+.botao-primario {
+    background-color: #4285F4;
+    color: white;
+}
+
+.botao-primario:hover {
+    background-color: #2d5dc8;
+}
+
+.botao-secundario {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.botao-secundario:hover {
+    background-color: #d0d0d0;
+}
+
+.alerta-erro {
+    background-color: #fee;
+    border-left: 4px solid #f44;
+    color: #c33;
+    padding: 12px 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+</style>
+{% endblock %}

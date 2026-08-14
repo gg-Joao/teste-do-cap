@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'usuarios/css/modal_autentitacao.css' %}">
+    <title>CAP | Cadastro</title>
+</head>
+
+<body>
+    <div class="card-autentitacao card-cadastro">
+        <h1><img src="{% static 'core/logos/logo_principal.svg' %}" alt="CAP"></h1>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <label for="email">Email</label>
+            <input type="email" name="email" value="{{ request.POST.email|default:'' }}">
+
+            <label for="nome_completo">Nome completo</label>
+            <input type="text" name="nome_completo" value="{{ request.POST.nome_completo|default:'' }}">
+
+            <label for="password1">Senha</label>
+            <input type="password" id="password1" name="password1">
+
+            <label for="password2">Confirme sua senha</label>
+            <input type="password" id="password2" name="password2">
+
+            {% if erro %}
+                <p class="mensagem-erro">{{ erro }}</p>
+            {% endif %}
+
+            <input type="submit" value="Cadastrar">
+        </form>
+
+        <a class='link-autentitacao' href="{% url 'login' %}">
+            Já tem conta? Faça login!
+        </a>
+    </div>
+</body>
+
+</html>

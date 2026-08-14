@@ -1,0 +1,33 @@
+{% load static %}
+
+<div id="eventModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>Criar Evento</h2>
+        <form method="post" action="{% url 'eventos:criar_evento' %}">
+            {% csrf_token %}
+    <label for="titulo">Título</label>
+    <input type="text" id="titulo" name="titulo" placeholder="Digite o título do evento" required>
+
+    <label for="data">Data</label>
+    <input type="date" id="data" name="data" required>
+
+    <div class="horarios">
+        <div>
+            <label for="inicio">Início</label>
+            <input type="time" id="inicio" name="inicio" required>
+        </div>
+        <div>
+            <label for="fim">Fim</label>
+            <input type="time" id="fim" name="fim" required>
+        </div>
+    </div>
+
+<label for="descricao">Descrição</label>
+<textarea id="descricao" name="descricao" placeholder="Digite a descrição do evento (opcional)"></textarea>
+            <div class="botoes">
+                <button type="button" id="cancelBtn" class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-save">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,189 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ evento.nome }}{% endblock %}
+
+{% block content %}
+<div class="container-pagina">
+    <div class="topo-detalhe">
+        <h1>{{ evento.nome }}</h1>
+        <a href="{% url 'inicio' %}" class="botao botao-secundario">← Voltar</a>
+    </div>
+    
+    <div class="detalhe-evento">
+        <div class="secao-info">
+            <h2>Informações do Evento</h2>
+            
+            <div class="info-item">
+                <label>Calendário:</label>
+                <span>{{ evento.calendario.nome }}</span>
+            </div>
+            
+            <div class="info-item">
+                <label>Data:</label>
+                <span>{{ evento.inicio|date:"d/m/Y" }}</span>
+            </div>
+            
+            <div class="info-item">
+                <label>Horário:</label>
+                <span>{{ evento.inicio|time:"H:i" }} - {{ evento.fim|time:"H:i" }}</span>
+            </div>
+            
+            <div class="info-item">
+                <label>Duração:</label>
+                <span>{% widthratio duracao_minutos 60 1 %} hora(s)</span>
+            </div>
+            
+            {% if evento.conteudo %}
+                <div class="info-item">
+                    <label>Descrição:</label>
+                    <div class="descricao">{{ evento.conteudo }}</div>
+                </div>
+            {% endif %}
+            
+            <div class="info-item">
+                <label>Criado em:</label>
+                <span>{{ evento.criado_em|date:"d/m/Y H:i" }}</span>
+            </div>
+            
+            {% if evento.alterado_em != evento.criado_em %}
+                <div class="info-item">
+                    <label>Última alteração:</label>
+                    <span>{{ evento.alterado_em|date:"d/m/Y H:i" }}</span>
+                </div>
+            {% endif %}
+        </div>
+        
+        {% if pode_editar %}
+            <div class="acoes-evento">
+                <a href="{% url 'eventos:atualizar_evento' evento.id %}" class="botao botao-primario">
+                    ✏️ Editar
+                </a>
+                <form method="post" action="{% url 'eventos:deletar_evento' evento.id %}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar este evento?');">
+                    {% csrf_token %}
+                    <button type="submit" class="botao botao-perigo">
+                        🗑️ Deletar
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.container-pagina {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.topo-detalhe {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 15px;
+}
+
+.topo-detalhe h1 {
+    margin: 0;
+    flex: 1;
+}
+
+.detalhe-evento {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+}
+
+.secao-info {
+    margin-bottom: 20px;
+}
+
+.secao-info h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.info-item {
+    display: flex;
+    margin-bottom: 12px;
+    gap: 15px;
+}
+
+.info-item label {
+    font-weight: bold;
+    color: #555;
+    min-width: 120px;
+}
+
+.info-item span,
+.info-item .descricao {
+    color: #333;
+    flex: 1;
+}
+
+.descricao {
+    background-color: white;
+    padding: 10px;
+    border-left: 3px solid #4285F4;
+    border-radius: 4px;
+    white-space: pre-wrap;
+}
+
+.acoes-evento {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.botao {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.2s;
+}
+
+.botao-primario {
+    background-color: #4285F4;
+    color: white;
+    flex: 1;
+}
+
+.botao-primario:hover {
+    background-color: #2d5dc8;
+}
+
+.botao-secundario {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.botao-secundario:hover {
+    background-color: #d0d0d0;
+}
+
+.botao-perigo {
+    background-color: #ea4335;
+    color: white;
+    flex: 1;
+}
+
+.botao-perigo:hover {
+    background-color: #d33325;
+}
+</style>
+{% endblock %}

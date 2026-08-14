@@ -1,0 +1,179 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ turma.nome }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'turmas/css/turma.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-turma">
+    <div class="topo-turma">
+        <h1>{{ turma.nome }}</h1>
+        <div class="acoes-topo">
+            <a href="{% url 'inicio' %}" class="botao botao-secundario">← Voltar</a>
+            {% if pode_gerenciar %}
+                <a href="{% url 'turmas:atualizar_turma' turma.id %}" class="botao botao-primario">
+                    ✏️ Editar
+                </a>
+                <form method="post" action="{% url 'turmas:deletar_turma' turma.id %}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar esta turma?');">
+                    {% csrf_token %}
+                    <button type="submit" class="botao botao-perigo">
+                        🗑️ Deletar
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Informações da turma -->
+    <div class="info-turma">
+        <div class="info-item">
+            <label>Descrição:</label>
+            <span>{{ turma.descricao }}</span>
+        </div>
+        <div class="info-item">
+            <label>Código de acesso:</label>
+            <code>{{ turma.codigo }}</code>
+        </div>
+        <div class="info-item">
+            <label>Criada em:</label>
+            <span>{{ turma.criado_em|date:"d/m/Y H:i" }}</span>
+        </div>
+    </div>
+    
+    <!-- Seção de membros -->
+    <div class="secao-membros">
+        <h2>Membros ({{ membros.count }})</h2>
+        
+        {% if pode_gerenciar %}
+            <div class="formulario-adicionar-membro">
+                <h3>Adicionar Novo Membro</h3>
+                <form id="form-adicionar-membro" method="post" action="{% url 'turmas:adicionar_membro' turma.id %}">
+                    {% csrf_token %}
+                    <div class="grupo-form">
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            placeholder="Email do usuário"
+                            required
+                        >
+                        <button type="submit" class="botao botao-primario">
+                            + Adicionar
+                        </button>
+                    </div>
+                    <div id="mensagem-adicionar"></div>
+                </form>
+            </div>
+        {% endif %}
+        
+        <div class="lista-membros">
+            {% for membro in membros %}
+                <div class="membro-item" data-membro-id="{{ membro.id }}">
+                    <div class="info-membro">
+                        <div class="nome-usuario">
+                            {{ membro.usuario.nome_completo }}
+                            {% if membro.eh_admin %}
+                                <span class="badge-admin">Admin</span>
+                            {% endif %}
+                        </div>
+                        <div class="email-usuario">{{ membro.usuario.email }}</div>
+                        <div class="data-membro">Adicionado em {{ membro.criado_em|date:"d/m/Y" }}</div>
+                    </div>
+                    
+                    {% if pode_gerenciar %}
+                        <div class="acoes-membro">
+                            {% if membro.usuario != request.user %}
+                                {% if not membro.eh_admin %}
+                                    <form method="post" action="{% url 'turmas:tornar_admin' turma.id membro.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="botao botao-pequeno" title="Tornar administrador">
+                                            ⭐ Admin
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <form method="post" action="{% url 'turmas:remover_admin' turma.id membro.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="botao botao-pequeno botao-aviso" title="Remover permissão de admin">
+                                            ✖ Admin
+                                        </button>
+                                    </form>
+                                {% endif %}
+                                
+                                <form method="post" action="{% url 'turmas:remover_membro' turma.id membro.id %}" style="display: inline;" onsubmit="return confirm('Remover {{ membro.usuario.nome_completo }}?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="botao botao-pequeno botao-perigo" title="Remover da turma">
+                                        🗑️ Remover
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="label-voce">(Você)</span>
+                                {% if membro.eh_admin and membros.count > 1 %}
+                                    <form method="post" action="{% url 'turmas:sair_turma' turma.id %}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja sair desta turma?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="botao botao-pequeno botao-aviso">
+                                            Sair
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p class="vazio">Nenhum membro adicionado ainda.</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Calendários da turma -->
+    <div class="secao-calendarios">
+        <h2>Calendários</h2>
+        {% if turma.calendarios.all %}
+            <ul class="lista-calendarios">
+                {% for calendario in turma.calendarios.all %}
+                    <li>
+                        <a href="{% url 'calendario_detalhe' calendario.id %}">
+                            {{ calendario.nome }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="vazio">Nenhum calendário adicionado ainda.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.getElementById('form-adicionar-membro').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const mensagem = document.getElementById('mensagem-adicionar');
+    
+    fetch('{% url "turmas:adicionar_membro" turma.id %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: 'email=' + encodeURIComponent(email)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.sucesso) {
+            mensagem.innerHTML = '<div class="alerta-sucesso">' + data.mensagem + '</div>';
+            document.getElementById('email').value = '';
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            mensagem.innerHTML = '<div class="alerta-erro">Erro: ' + data.erro + '</div>';
+        }
+    })
+    .catch(e => {
+        mensagem.innerHTML = '<div class="alerta-erro">Erro: ' + e + '</div>';
+    });
+});
+</script>
+{% endblock %}

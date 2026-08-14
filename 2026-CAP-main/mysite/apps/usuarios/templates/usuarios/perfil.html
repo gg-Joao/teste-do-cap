@@ -1,0 +1,279 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Perfil{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'usuarios/css/perfil.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-perfil">
+    <div class="topo-perfil">
+        <h1>Perfil de {{ usuario.primeiro_nome }}</h1>
+        <div class="acoes-topo">
+            <a href="{% url 'inicio' %}" class="botao botao-secundario">← Voltar</a>
+        </div>
+    </div>
+    
+    <!-- Informações do Usuário -->
+    <div class="secao-info">
+        <h2>Informações Pessoais</h2>
+        
+        <div class="info-item">
+            <label>Nome Completo:</label>
+            <span>{{ usuario.nome_completo }}</span>
+        </div>
+        
+        <div class="info-item">
+            <label>Email:</label>
+            <span>{{ usuario.email }}</span>
+        </div>
+        
+        <div class="info-item">
+            <label>Cadastro:</label>
+            <span>{{ usuario.criado_em|date:"d/m/Y H:i" }}</span>
+        </div>
+        
+        <div class="acoes-info">
+            <a href="{% url 'editar_perfil' %}" class="botao botao-primario">
+                ✏️ Editar Perfil
+            </a>
+            <a href="{% url 'alterar_senha' %}" class="botao botao-primario">
+                🔐 Alterar Senha
+            </a>
+        </div>
+    </div>
+    
+    <!-- Resumo de Atividades -->
+    <div class="secao-resumo">
+        <h2>Suas Atividades</h2>
+        
+        <div class="cards-resumo">
+            <div class="card-resumo">
+                <div class="numero">{{ total_turmas }}</div>
+                <div class="label">Turmas</div>
+            </div>
+            
+            <div class="card-resumo">
+                <div class="numero">{{ total_calendarios }}</div>
+                <div class="label">Calendários Pessoais</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Turmas Recentes -->
+    {% if turmas %}
+        <div class="secao-turmas">
+            <h2>Suas Turmas</h2>
+            <div class="lista-itens">
+                {% for turma in turmas %}
+                    <div class="item-link">
+                        <a href="{% url 'turma_detalhe' turma.id %}">
+                            <strong>{{ turma.nome }}</strong>
+                            <span class="descricao">{{ turma.descricao }}</span>
+                        </a>
+                    </div>
+                {% endfor %}
+                {% if total_turmas > 5 %}
+                    <p class="mais-items">... e {{ total_turmas|add:"-5" }} mais turma(s)</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Calendários Pessoais Recentes -->
+    {% if calendarios %}
+        <div class="secao-calendarios">
+            <h2>Seus Calendários Pessoais</h2>
+            <div class="lista-itens">
+                {% for calendario in calendarios %}
+                    <div class="item-link">
+                        <a href="{% url 'calendario_detalhe' calendario.id %}">
+                            <strong>{{ calendario.nome }}</strong>
+                            <span class="descricao">{{ calendario.descricao }}</span>
+                        </a>
+                    </div>
+                {% endfor %}
+                {% if total_calendarios > 5 %}
+                    <p class="mais-items">... e {{ total_calendarios|add:"-5" }} mais calendário(s)</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.container-perfil {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.topo-perfil {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 15px;
+}
+
+.topo-perfil h1 {
+    margin: 0;
+    flex: 1;
+}
+
+.acoes-topo {
+    display: flex;
+    gap: 10px;
+}
+
+.secao-info,
+.secao-resumo,
+.secao-turmas,
+.secao-calendarios {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+}
+
+.secao-info h2,
+.secao-resumo h2,
+.secao-turmas h2,
+.secao-calendarios h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.info-item {
+    display: flex;
+    margin-bottom: 12px;
+    gap: 15px;
+}
+
+.info-item label {
+    font-weight: bold;
+    color: #555;
+    min-width: 150px;
+}
+
+.info-item span {
+    color: #333;
+    flex: 1;
+}
+
+.acoes-info {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+}
+
+.cards-resumo {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.card-resumo {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card-resumo .numero {
+    font-size: 32px;
+    font-weight: bold;
+    color: #4285F4;
+    margin-bottom: 10px;
+}
+
+.card-resumo .label {
+    font-size: 14px;
+    color: #666;
+}
+
+.lista-itens {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.item-link a {
+    display: block;
+    padding: 15px;
+    background-color: white;
+    border-radius: 6px;
+    border-left: 4px solid #4285F4;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+}
+
+.item-link a:hover {
+    background-color: #f0f4ff;
+    border-left-color: #2d5dc8;
+}
+
+.item-link strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.descricao {
+    font-size: 13px;
+    color: #666;
+}
+
+.mais-items {
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+    margin: 10px 0 0 0;
+}
+
+.botao {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.2s;
+}
+
+.botao-primario {
+    background-color: #4285F4;
+    color: white;
+    flex: 1;
+}
+
+.botao-primario:hover {
+    background-color: #2d5dc8;
+}
+
+.botao-secundario {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.botao-secundario:hover {
+    background-color: #d0d0d0;
+}
+</style>
+{% endblock %}
