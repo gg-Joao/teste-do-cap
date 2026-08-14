@@ -22,7 +22,7 @@ def perfil(request):
         'turmas': usuario.turmas.all()[:5],  # Últimas 5 turmas
         'calendarios': usuario.calendarios.filter(turma=None)[:5]  # Últimos 5 calendários
     }
-    return render(request, 'usuarios/perfil.html', context)
+    return render(request, 'meu_perfil.html', context)
 
 
 @login_required
